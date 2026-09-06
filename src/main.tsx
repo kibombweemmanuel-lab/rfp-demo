@@ -5,10 +5,8 @@ import { routes } from './routes';
 import './styles/index.css';
 
 const router = createBrowserRouter(routes, {
-  future: {
-    v7_startTransition: true,
-  },
-});
+  future: { v7_startTransition: true },
+} as Parameters<typeof createBrowserRouter>[1]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

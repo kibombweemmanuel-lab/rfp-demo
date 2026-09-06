@@ -1,0 +1,11 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Georgia, 'Times New Roman', serif; color: #17202a; background: #eef4f1; }
+button { font: inherit; cursor: pointer; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body { @apply m-0 bg-emerald-50 font-serif text-ink; }
+	button { @apply cursor-pointer; }
+}

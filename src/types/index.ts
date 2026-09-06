@@ -42,8 +42,36 @@ export interface FHIRObservationBundle {
 // Auth Types
 export type UserRole = 'Nurse' | 'Doctor' | 'Pharmacist' | 'Cashier' | 'Admin';
 
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  permissions: string[];
+}
+
 export interface AuthContextType {
+  user: AuthUser | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
   role: UserRole;
   permissions: string[];
   setRole: (role: UserRole) => void;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+export interface Encounter {
+  id: string;
+  date: string;
+  type: 'Assessment' | 'Follow-up' | 'Admission' | 'Discharge';
+  diagnosis: string;
+  notes: string;
+  author: string;
+}
+
+export interface PatientRecord extends Patient {
+  bloodGroup: string;
+  allergies: string[];
+  encounters: Encounter[];
 }

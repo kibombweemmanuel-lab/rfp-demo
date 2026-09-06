@@ -1,0 +1,24 @@
+  .auth-page { @apply relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 p-6 md:justify-between md:px-16; }
+  .auth-atmosphere { @apply absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_#7c3aed55,_transparent_32%),radial-gradient(circle_at_80%_80%,_#0ea5e955,_transparent_30%)]; }
+  .auth-panel { @apply relative z-10 w-full max-w-md rounded-[2rem] border border-white/10 bg-white/95 p-8 shadow-2xl shadow-black/30 md:p-10; }
+  .auth-brand { @apply mb-10 flex items-center gap-3 text-xl font-bold tracking-tight text-slate-900; }
+  .auth-brand-mark { @apply flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-lg shadow-violet-300; }
+  .auth-brand-mark svg { @apply h-6 w-6; }
+  .auth-panel h1 { @apply m-0 text-4xl font-bold tracking-tight text-slate-950; }
+  .auth-subtitle { @apply mb-8 mt-3 text-sm text-slate-500; }
+  .auth-form label { @apply mb-4 block text-xs font-bold uppercase tracking-wider text-slate-500; }
+  .auth-form input { @apply mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100; }
+  .auth-error { @apply rounded-xl bg-rose-50 p-3 text-sm text-rose-700; }
+  .auth-submit { @apply mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50; }
+  .auth-submit svg { @apply h-4 w-4; }
+  .demo-login { @apply mt-4 w-full rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-700 hover:bg-violet-100; }
+  .auth-footnote { @apply mt-4 text-center text-xs text-slate-400; }
+  .auth-aside { @apply relative z-10 hidden max-w-sm text-white md:block; }
+  .auth-aside svg { @apply mb-8 h-16 w-16 text-violet-300; }
+  .auth-aside p { @apply text-3xl font-semibold leading-tight; }
+  .auth-aside span { @apply mt-6 block text-xs uppercase tracking-[0.25em] text-slate-400; }
+  .auth-loading { @apply flex min-h-screen items-center justify-center bg-slate-950 text-sm text-white; }
+  .user-menu { @apply inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-2 py-1 text-left text-white hover:bg-white/20; }
+  .user-avatar { @apply flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500 text-xs font-bold; }
+  .user-name { @apply hidden max-w-28 truncate text-xs font-semibold lg:block; }
+  .user-menu > svg { @apply h-4 w-4 text-slate-300; }
