@@ -2,5 +2,6 @@ node_modules/
 .env
 server/data/queue.json
 server/data/patients.json
+server/data/users.json
 dist/
 server/data/patients.json

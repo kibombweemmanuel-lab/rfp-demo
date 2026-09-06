@@ -31,6 +31,7 @@ export default function Layout({ children }: LayoutProps) {
           <Link to="/medical"><PremiumIcon name="stethoscope" />Medical</Link>
           <Link to="/surgical"><PremiumIcon name="surgery" />Surgical</Link>
           <Link to="/integrations"><PremiumIcon name="integration" />Integrations</Link>
+            {user?.permissions.includes('all') && <Link to="/admin"><PremiumIcon name="shield" />Admin</Link>}
         </nav>
         <div className="nav-right">
           <button className="sync-btn" onClick={processSyncQueue}>

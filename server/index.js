@@ -1,16 +1,18 @@
 import { createServer } from 'node:http';
-import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createJsonStore } from './storage/jsonStore.js';
 import { createPostgresStore } from './storage/postgresStore.js';
 import { createPatientService } from './services/patientService.js';
 import { createQueueService } from './services/queueService.js';
+import { createUserService } from './services/userService.js';
 import { encounterSchema, parseBody, queueItemSchema, requisitionSchema } from './validation.js';
 
 const port = Number(process.env.API_PORT || 4000);
 const dataFile = join(dirname(fileURLToPath(import.meta.url)), 'data', 'queue.json');
 const patientsFile = join(dirname(fileURLToPath(import.meta.url)), 'data', 'patients.json');
+const usersFile = join(dirname(fileURLToPath(import.meta.url)), 'data', 'users.json');
 
 const fhirValues = [12.4, 13.1, 4.8, 97.2];
 const roles = ['Nurse', 'Doctor', 'Pharmacist', 'Cashier', 'Admin'];
@@ -36,15 +38,7 @@ const surgicalSchedule = [
   { theatre: 'OT 3', procedure: 'Emergency Laparotomy', time: 'NOW', status: 'emergency' },
 ];
 const sessions = new Map();
-const users = JSON.parse(process.env.AUTH_USERS || '[]');
-
-function verifyPassword(password, storedHash) {
-  const [salt, encodedHash] = String(storedHash || '').split(':');
-  if (!salt || !encodedHash) return false;
-  const expected = Buffer.from(encodedHash, 'hex');
-  const actual = scryptSync(password, salt, expected.length || 64);
-  return expected.length === actual.length && timingSafeEqual(expected, actual);
-}
+const configuredUsers = JSON.parse(process.env.AUTH_USERS || '[]');
 
 function getAuthenticatedUser(request) {
   const token = request.headers.authorization?.replace('Bearer ', '');
@@ -77,6 +71,7 @@ const createStore = (filePath, documentName, initialValue) => process.env.DATABA
 
 const patientService = createPatientService(createStore(patientsFile, 'patients', initialPatients));
 const queueService = createQueueService(createStore(dataFile, 'sync_queue', []));
+const userService = createUserService(createStore(usersFile, 'users', configuredUsers));
 
 function sendJson(response, status, payload) {
   response.writeHead(status, {
@@ -90,6 +85,10 @@ function requirePermission(request, response, permission) {
   if (request.user.permissions.includes('all') || request.user.permissions.includes(permission)) return true;
   sendJson(response, 403, { error: `Permission required: ${permission}` });
   return false;
+}
+
+function requireAdmin(request, response) {
+  return requirePermission(request, response, 'user_management');
 }
 
 async function readBody(request) {
@@ -138,15 +137,14 @@ async function handleRequest(request, response) {
 
   if (request.method === 'POST' && path === '/api/auth/login') {
     const body = await readBody(request);
-    const user = users.find((candidate) => candidate.email === body.email && verifyPassword(body.password, candidate.passwordHash));
+    const user = await userService.authenticate(body.email || '', body.password || '');
     if (!user) {
       sendJson(response, 401, { error: 'Invalid email or password' });
       return;
     }
     const token = randomUUID();
-    const { passwordHash, ...safeUser } = user;
-    sessions.set(token, safeUser);
-    sendJson(response, 200, { token, user: safeUser });
+    sessions.set(token, user);
+    sendJson(response, 200, { token, user });
     return;
   }
 
@@ -165,6 +163,54 @@ async function handleRequest(request, response) {
     const token = request.headers.authorization?.replace('Bearer ', '');
     if (token) sessions.delete(token);
     sendJson(response, 200, { loggedOut: true });
+    return;
+  }
+
+  if (request.method === 'GET' && path === '/api/admin/users') {
+    if (!requireAdmin(request, response)) return;
+    sendJson(response, 200, { users: await userService.list() });
+    return;
+  }
+
+  if (request.method === 'POST' && path === '/api/admin/users') {
+    if (!requireAdmin(request, response)) return;
+    const body = await readBody(request);
+    if (!body.name || !body.email || !body.password || !roles.includes(body.role)) {
+      sendJson(response, 400, { error: 'name, email, password, and a valid role are required' });
+      return;
+    }
+    const created = await userService.create({
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      role: body.role,
+      permissions: body.permissions || [],
+    });
+    if (!created) {
+      sendJson(response, 409, { error: 'email already exists' });
+      return;
+    }
+    sendJson(response, 201, { user: created });
+    return;
+  }
+
+  const adminUserMatch = path.match(/^\/api\/admin\/users\/([^/]+)\/status$/);
+  if (request.method === 'PATCH' && adminUserMatch) {
+    if (!requireAdmin(request, response)) return;
+    const body = await readBody(request);
+    if (typeof body.active !== 'boolean') {
+      sendJson(response, 400, { error: 'active must be boolean' });
+      return;
+    }
+    const updated = await userService.setActive(adminUserMatch[1], body.active);
+    if (!updated) {
+      sendJson(response, 404, { error: 'user not found' });
+      return;
+    }
+    if (!body.active) {
+      for (const [token, sessionUser] of sessions) if (sessionUser.id === updated.id) sessions.delete(token);
+    }
+    sendJson(response, 200, { user: updated });
     return;
   }
 

@@ -94,3 +94,22 @@
   .schedule-list li b { @apply mr-1 text-slate-900; }
   .schedule-dot { @apply h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500; }
   .schedule-dot.emergency { @apply bg-rose-500; }
+  .admin-grid { @apply relative z-10 mb-6 grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr]; }
+  .admin-metrics { @apply mb-6 grid grid-cols-3 gap-3; }
+  .admin-metrics span { @apply rounded-2xl bg-slate-50 p-4 text-center; }
+  .admin-metrics b { @apply block text-2xl text-slate-900; }
+  .admin-metrics small { @apply text-[10px] uppercase tracking-wider text-slate-400; }
+  .admin-form label { @apply mb-4 block text-xs font-bold uppercase tracking-wider text-slate-500; }
+  .admin-form input, .admin-form select { @apply mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100; }
+  .admin-form .button { @apply w-full; }
+  .admin-users-panel { @apply relative z-10; }
+  .admin-user-list { @apply space-y-3; }
+  .admin-user-row { @apply flex flex-wrap items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4; }
+  .admin-user-main { @apply flex min-w-48 flex-1 flex-col; }
+  .admin-user-main b { @apply text-sm text-slate-900; }
+  .admin-user-main small { @apply text-xs text-slate-500; }
+  .admin-role, .user-state { @apply rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700; }
+  .user-state { @apply bg-emerald-100 text-emerald-700; }
+  .user-state.inactive { @apply bg-slate-200 text-slate-500; }
+  .compact-button { @apply px-3 py-2 text-xs; }
+  .admin-notice { @apply relative z-10 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700; }

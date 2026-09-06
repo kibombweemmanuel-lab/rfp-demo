@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "node server/index.js",
-    "start:api": "node server/index.js",
+    "dev:api": "node --env-file-if-exists=.env server/index.js",
+    "start:api": "node --env-file-if-exists=.env server/index.js",
     "auth:hash": "node server/hashPassword.js",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
