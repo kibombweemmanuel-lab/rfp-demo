@@ -1,5 +1,6 @@
 {
   "name": "rfp-demo",
+  "description": "Premium clinical operations platform demo with patient records, role-based workflows, offline sync, FHIR/SAP integrations, and PostgreSQL support.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
