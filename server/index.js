@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createJsonStore } from './storage/jsonStore.js';
@@ -36,19 +36,21 @@ const surgicalSchedule = [
   { theatre: 'OT 3', procedure: 'Emergency Laparotomy', time: 'NOW', status: 'emergency' },
 ];
 const sessions = new Map();
-const demoUsers = [
-  { id: 'usr-doctor-001', name: 'Dr. Sarah Mwale', email: 'doctor@rfp.demo', password: 'doctor123', role: 'Doctor', permissions: ['triage', 'patient_records', 'prescribe'] },
-  { id: 'usr-nurse-001', name: 'Nurse Grace Moyo', email: 'nurse@rfp.demo', password: 'nurse123', role: 'Nurse', permissions: ['triage', 'patient_records'] },
-  { id: 'usr-pharmacist-001', name: 'Peter Banda', email: 'pharmacist@rfp.demo', password: 'pharmacist123', role: 'Pharmacist', permissions: ['pharmacy', 'patient_records'] },
-  { id: 'usr-cashier-001', name: 'Mary Phiri', email: 'cashier@rfp.demo', password: 'cashier123', role: 'Cashier', permissions: ['billing'] },
-  { id: 'usr-admin-001', name: 'System Administrator', email: 'admin@rfp.demo', password: 'admin123', role: 'Admin', permissions: ['all'] },
-];
+const users = JSON.parse(process.env.AUTH_USERS || '[]');
+
+function verifyPassword(password, storedHash) {
+  const [salt, encodedHash] = String(storedHash || '').split(':');
+  if (!salt || !encodedHash) return false;
+  const expected = Buffer.from(encodedHash, 'hex');
+  const actual = scryptSync(password, salt, expected.length || 64);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
 
 function getAuthenticatedUser(request) {
   const token = request.headers.authorization?.replace('Bearer ', '');
   return token ? sessions.get(token) : null;
 }
-const seedPatients = [
+const initialPatients = [
   {
     id: 101,
     name: 'Peter Kamanga',
@@ -73,7 +75,7 @@ const createStore = (filePath, documentName, initialValue) => process.env.DATABA
   ? createPostgresStore(process.env.DATABASE_URL, documentName, initialValue)
   : createJsonStore(filePath, initialValue);
 
-const patientService = createPatientService(createStore(patientsFile, 'patients', seedPatients));
+const patientService = createPatientService(createStore(patientsFile, 'patients', initialPatients));
 const queueService = createQueueService(createStore(dataFile, 'sync_queue', []));
 
 function sendJson(response, status, payload) {
@@ -130,19 +132,19 @@ async function handleRequest(request, response) {
   }
 
   if (request.method === 'GET' && path === '/health') {
-    sendJson(response, 200, { status: 'ok', service: 'rfp-demo-api' });
+    sendJson(response, 200, { status: 'ok', service: 'rfp-emr-api' });
     return;
   }
 
   if (request.method === 'POST' && path === '/api/auth/login') {
     const body = await readBody(request);
-    const demoUser = demoUsers.find((user) => user.email === body.email && user.password === body.password);
-    if (!demoUser) {
+    const user = users.find((candidate) => candidate.email === body.email && verifyPassword(body.password, candidate.passwordHash));
+    if (!user) {
       sendJson(response, 401, { error: 'Invalid email or password' });
       return;
     }
     const token = randomUUID();
-    const { password, ...safeUser } = demoUser;
+    const { passwordHash, ...safeUser } = user;
     sessions.set(token, safeUser);
     sendJson(response, 200, { token, user: safeUser });
     return;
@@ -297,5 +299,5 @@ const server = createServer((request, response) => {
 });
 
 server.listen(port, () => {
-  console.log(`RFP demo API listening on http://localhost:${port}`);
+  console.log(`RFP EMR API listening on http://localhost:${port}`);
 });

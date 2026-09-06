@@ -7,8 +7,8 @@ import '../styles/auth.css';
 export default function LoginPage() {
   const { login, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('doctor@rfp.demo');
-  const [password, setPassword] = useState('doctor123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,8 +42,7 @@ export default function LoginPage() {
           {error && <p className="auth-error">{error}</p>}
           <button className="auth-submit" disabled={isSubmitting}>{isSubmitting ? 'Authenticating...' : 'Sign in'}<PremiumIcon name="chevron" /></button>
         </form>
-        <button className="demo-login" onClick={() => { setEmail('doctor@rfp.demo'); setPassword('doctor123'); }}>Use demo clinician account</button>
-        <p className="auth-footnote">Demo credentials are prefilled for the RFP walkthrough.</p>
+        <p className="auth-footnote">Access is provisioned by your organization administrator.</p>
       </section>
       <aside className="auth-aside"><PremiumIcon name="activity" /><p>One workspace for safer, faster clinical decisions.</p><span>Connected care / offline ready</span></aside>
     </main>

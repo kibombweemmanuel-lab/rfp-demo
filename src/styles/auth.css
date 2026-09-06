@@ -11,7 +11,6 @@
   .auth-error { @apply rounded-xl bg-rose-50 p-3 text-sm text-rose-700; }
   .auth-submit { @apply mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50; }
   .auth-submit svg { @apply h-4 w-4; }
-  .demo-login { @apply mt-4 w-full rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-700 hover:bg-violet-100; }
   .auth-footnote { @apply mt-4 text-center text-xs text-slate-400; }
   .auth-aside { @apply relative z-10 hidden max-w-sm text-white md:block; }
   .auth-aside svg { @apply mb-8 h-16 w-16 text-violet-300; }

@@ -3,7 +3,7 @@ import { useFHIRFetch } from '../hooks/useFHIRFetch';
 import '../styles/pages.css';
 import PremiumIcon from '../components/PremiumIcon';
 
-export default function IntegrationDemoPage() {
+export default function IntegrationPage() {
   const { status: sapStatus, sapDoc, syncSAP } = useSAPSync();
   const { fhirData, fetchFHIR } = useFHIRFetch();
 

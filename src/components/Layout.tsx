@@ -30,7 +30,7 @@ export default function Layout({ children }: LayoutProps) {
           <Link to="/ohs"><PremiumIcon name="leaf" />OHS</Link>
           <Link to="/medical"><PremiumIcon name="stethoscope" />Medical</Link>
           <Link to="/surgical"><PremiumIcon name="surgery" />Surgical</Link>
-          <Link to="/integration-demo"><PremiumIcon name="integration" />Integrations</Link>
+          <Link to="/integrations"><PremiumIcon name="integration" />Integrations</Link>
         </nav>
         <div className="nav-right">
           <button className="sync-btn" onClick={processSyncQueue}>

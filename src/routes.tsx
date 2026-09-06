@@ -10,7 +10,7 @@ const EmergencyPage = lazy(() => import('./pages/EmergencyPage'));
 const OHSPage = lazy(() => import('./pages/OHSPage'));
 const MedicalPage = lazy(() => import('./pages/MedicalPage'));
 const SurgicalPage = lazy(() => import('./pages/SurgicalPage'));
-const IntegrationDemoPage = lazy(() => import('./pages/IntegrationDemoPage'));
+const IntegrationPage = lazy(() => import('./pages/IntegrationPage'));
 const PatientDetail = lazy(() => import('./features/dashboard/PatientDetail'));
 const PatientDirectory = lazy(() => import('./features/dashboard/PatientDirectory'));
 const ServerQueueAdmin = lazy(() => import('./features/admin/ServerQueueAdmin'));
@@ -32,7 +32,7 @@ export const routes: RouteObject[] = [
           { path: '/ohs', element: lazyPage(<OHSPage />) },
           { path: '/medical', element: lazyPage(<MedicalPage />) },
           { path: '/surgical', element: lazyPage(<SurgicalPage />) },
-          { path: '/integration-demo', element: lazyPage(<IntegrationDemoPage />) },
+          { path: '/integrations', element: lazyPage(<IntegrationPage />) },
           { path: '/patients', element: lazyPage(<PatientDirectory />) },
           { path: '/patient/:id', element: lazyPage(<PatientDetail />) },
           { path: '/admin', element: lazyPage(<ServerQueueAdmin />) },

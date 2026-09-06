@@ -1,10 +1,8 @@
 # RFP EMR
 
-A modern clinical operations platform demo for patient records, encounters, triage, occupational health, admissions, theatre scheduling, and healthcare interoperability.
+A clinical operations platform for patient records, encounters, triage, occupational health, admissions, theatre scheduling, and healthcare interoperability.
 
-RFP EMR combines a premium React interface with a Node.js API, role-aware authentication, persistent patient workflows, offline synchronization, simulated FHIR and SAP integrations, and optional PostgreSQL storage.
-
-> This project is an RFP/demo platform. FHIR and SAP integrations are simulated, and the included credentials are for demonstration only.
+RFP EMR combines a React and TypeScript client with a Node.js API, organization-provisioned authentication, persistent patient workflows, offline synchronization, FHIR and SAP integration adapters, and PostgreSQL storage.
 
 ## Highlights
 
@@ -18,8 +16,8 @@ RFP EMR combines a premium React interface with a Node.js API, role-aware authen
 - Medical admission workflow
 - Surgical theatre schedule and pre-operative checklist
 - Offline patient capture and synchronization queue
-- Simulated HL7 FHIR observation retrieval
-- Simulated SAP S/4HANA stock requisitions
+- HL7 FHIR observation retrieval adapter
+- SAP S/4HANA stock requisition adapter
 - PostgreSQL adapter with JSON storage fallback
 - Responsive Tailwind CSS interface with premium SVG icons
 
@@ -68,17 +66,25 @@ npm run dev
 
 Open the URL printed by Vite, usually `http://localhost:5173`.
 
-## Demo Accounts
+## Authentication Configuration
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Doctor | `doctor@rfp.demo` | `doctor123` |
-| Nurse | `nurse@rfp.demo` | `nurse123` |
-| Pharmacist | `pharmacist@rfp.demo` | `pharmacist123` |
-| Cashier | `cashier@rfp.demo` | `cashier123` |
-| Admin | `admin@rfp.demo` | `admin123` |
+Users are provisioned by the organization and supplied through the `AUTH_USERS` deployment secret. No credentials are committed to this repository.
 
-These accounts are intentionally included for demonstrations. Do not use them in production.
+Generate a password hash with:
+
+```powershell
+npm run auth:hash -- "replace-with-a-strong-password"
+```
+
+Store the resulting `salt:hash` value as `passwordHash` in the user configuration. Passwords are verified with Node's built-in `scrypt` implementation.
+
+`AUTH_USERS` accepts a JSON array with this shape:
+
+```json
+[{"id":"usr-admin","name":"Administrator","email":"admin@example.com","password":"replace-me","role":"Admin","permissions":["all"]}]
+```
+
+Use a secret manager and hashed-password authentication before production deployment.
 
 ## PostgreSQL
 
@@ -86,7 +92,7 @@ The API uses JSON storage by default. To use PostgreSQL locally, start Docker De
 
 ```powershell
 npm run db:up
-$env:DATABASE_URL = "postgresql://rfp:rfp_demo@localhost:5432/rfp_demo"
+$env:DATABASE_URL = "postgresql://rfp:rfp_emr@localhost:5432/rfp_emr"
 npm run dev:api
 ```
 
@@ -169,13 +175,12 @@ npm run db:down      # Stop PostgreSQL
 
 ## Current Scope
 
-This repository is designed for demonstrations and RFP evaluation. The following areas should be completed before production deployment:
+The following areas should be completed before production deployment:
 
-- Replace demo credentials with administrator-created accounts
 - Hash passwords and add password reset and MFA flows
 - Persist sessions in a database or secure session store
 - Add comprehensive audit logging
-- Replace simulated SAP and FHIR integrations with certified endpoints
+- Configure and certify SAP and FHIR integration endpoints
 - Add clinical workflow state transitions and stronger domain validation
 - Add automated API, component, and end-to-end tests
 - Review privacy, security, hosting, and regulatory requirements for the deployment region
@@ -184,7 +189,7 @@ This repository is designed for demonstrations and RFP evaluation. The following
 
 Suggested GitHub description:
 
-> Premium clinical operations platform demo with patient records, role-based workflows, offline sync, FHIR/SAP integrations, and PostgreSQL support.
+> Clinical operations platform with patient records, role-based workflows, offline synchronization, FHIR and SAP integrations, and PostgreSQL support.
 
 ## License
 
